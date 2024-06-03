@@ -39,12 +39,14 @@ class CheckerAI:
     # Utility function
     # Takes a board state evaluates it
     # Higher evaluation for kings
+    # ai_player can be called via _P1PIECE or _P2PIECE
     def evaluateBoard(self, board:CheckerBoard) -> int:
-        # AI Teams works on this
+        # check Q-Table for cached evaluations
         if (self.qTable.get(board) is not None):
             # print("Using QTable val: ", self.qTable[board])
             return self.qTable.get(board)
 
+        # check for terminal state evaluations
         if (board.player1NumPieces + board.player1NumKings) == 0:
             self.qTable[board] = -1 * self._TERMINAL_NODE_EVAL
             return -1 * self._TERMINAL_NODE_EVAL
@@ -52,6 +54,13 @@ class CheckerAI:
             self.qTable[board] = self._TERMINAL_NODE_EVAL
             return self._TERMINAL_NODE_EVAL
         
+        turn = CheckerBoard().turn; 
+        if turn == _P1PIECE: 
+            opponent = _P2PIECE
+        else: 
+            opponent = _P1PIECE
+
+        # initialize board value and promotion distances and evualate each piece on the board
         boardValue = 0.0
         P1DistanceFromPromo = 0
         P2DistanceFromPromo = 0
@@ -60,29 +69,36 @@ class CheckerAI:
                 if type(piece) is Piece:
                     pieceValue = self._PIECE_VALUE
                     adjSpaces = [(piece.row + 1, piece.col + 1), (piece.row + 1, piece.col - 1), (piece.row - 1, piece.col + 1), (piece.row - 1, piece.col - 1)]
+                    
                     # Is the piece defending or being defended by another piece
                     for row, col in adjSpaces:
                         if 0 <= row < _ROWS and 0 <= col < _COLS:
                             if (type(board.board[row][col]) is Piece and (board.board[row][col].player == piece.player)):
                                 pieceValue += self._ADJ_VALUE
+
                     # Is the piece on the edge
-                    if piece.col == 0 or piece.col == _COLS:
+                    if piece.col == 0 or piece.col == _COLS - 1:
                         pieceValue += self._EDGE_VALUE
+
                     # Is the piece defending the promotion line
-                    if (piece.row == 0 and piece.pieceNum == _P1PIECE) or (piece.row == _ROWS and piece.pieceNum == _P2PIECE):
+                    if (piece.row == 0 and piece.pieceNum == _P1PIECE) or (piece.row == _ROWS - 1 and piece.pieceNum == _P2PIECE):
                         pieceValue += self._PROMO_VALUE
+
                     # Is the piece a King
                     if piece.king:
                         pieceValue += self._KING_VALUE
+
                     # Does the piece not belong to the AI
-                    if piece.player == 2:
+                    if piece.player == opponent:
                         pieceValue *= self._OPPONENT_MULT
                         if not piece.king:
                             P2DistanceFromPromo += (float(_ROWS - piece.row) / _ROWS)
                     else:
                         if not piece.king:
                             P1DistanceFromPromo += (float(piece.row) / _ROWS)
+                    
                     boardValue += pieceValue
+
         # Add the average distance of the pieces from their promotion line
         if board.player1NumPieces > 0 and board.player2NumPieces > 0:
             boardValue += self._DISTANCE_MULT * ((P1DistanceFromPromo / board.player1NumPieces) - (P2DistanceFromPromo / board.player2NumPieces))
@@ -90,7 +106,7 @@ class CheckerAI:
         self.qTable[board] = boardValue
         return boardValue
         # return board.player1NumPieces - board.player2NumPieces + ((board.player1NumKings - board.player2NumKings) * self._KING_VALUE)
-        
+       
     
     # current_state (board) - current state of the game board
     # depth (int) - how deep in the minimax tree to go
