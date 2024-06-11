@@ -147,7 +147,7 @@ class CheckerAI:
     # Decides if it should take the best move or explore
     def exploration(self, bestMove:CheckerBoard, secondBestMove:CheckerBoard) -> CheckerBoard:
         prob = random.random()
-        if (secondBestMove is not None and prob > self._EPSILON):
+        if (self.saveToDisk and secondBestMove is not None and prob > self._EPSILON):
             print("Exploring a new move")
             return secondBestMove
         return bestMove
