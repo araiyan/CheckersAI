@@ -10,11 +10,11 @@ from constants import Q_TABLE_FILE, _P1PIECE, _P2PIECE, _P1KING, _P2KING, _ROWS,
 class CheckerAI:
 
     #Weights of Heuristic Factors
-    _KING_VALUE = 3
+    _KING_VALUE = 2
     _PIECE_VALUE = 2
     _ADJ_VALUE = 0.2
-    _EDGE_VALUE = 0.5
-    _PROMO_VALUE = 0.8
+    _EDGE_VALUE = 0.4
+    _PROMO_VALUE = 0.3
     _OPPONENT_MULT = -1.2
     _DISTANCE_MULT = 2
 
@@ -73,26 +73,28 @@ class CheckerAI:
                             if (type(board.board[row][col]) is Piece and (board.board[row][col].player == piece.player)):
                                 pieceValue += self._ADJ_VALUE
                     # Is the piece on the edge
-                    if piece.col == 0 or piece.col == _COLS:
+                    if piece.col == 0 or piece.col == (_COLS - 1):
                         pieceValue += self._EDGE_VALUE
                     # Is the piece defending the promotion line
-                    if (piece.row == 0 and piece.pieceNum == _P1PIECE) or (piece.row == _ROWS and piece.pieceNum == _P2PIECE):
+                    if (piece.row == 0 and piece.pieceNum == _P1PIECE) or (piece.row == (_ROWS - 1) and piece.pieceNum == _P2PIECE):
                         pieceValue += self._PROMO_VALUE
                     # Is the piece a King
                     if piece.king:
                         pieceValue += self._KING_VALUE
+
                     # Does the piece not belong to the AI
                     if piece.player == 2:
                         pieceValue *= self._OPPONENT_MULT
                         if not piece.king:
-                            P2DistanceFromPromo += (float(_ROWS - piece.row) / _ROWS)
+                            P2DistanceFromPromo += (float(_ROWS - (piece.row + 1)) / _ROWS)
                     else:
                         if not piece.king:
-                            P1DistanceFromPromo += (float(piece.row) / _ROWS)
+                            P1DistanceFromPromo += (float(piece.row + 1) / _ROWS)
                     boardValue += pieceValue
         # Add the average distance of the pieces from their promotion line
         if board.player1NumPieces > 0 and board.player2NumPieces > 0:
             boardValue += self._DISTANCE_MULT * ((P1DistanceFromPromo / board.player1NumPieces) - (P2DistanceFromPromo / board.player2NumPieces))
+            
 
         self.qTable[board] = boardValue
         return boardValue

@@ -13,7 +13,7 @@ if __name__ == "__main__":
     bt = BoardTransition()
     CB = CheckerBoard()
 
-    player = _P2PIECE
+    player = _P1PIECE
 
     replayable = True
     gameActive = True
@@ -47,10 +47,10 @@ if __name__ == "__main__":
                             if (CB.placePiece(selectedPiece)):
                                 nextBoardStates = bt.getAllBoards(CB)
                                 wonPlayer = CB.gameEnd(len(nextBoardStates))
-                                if (wonPlayer == _P1PIECE):
+                                if (wonPlayer == player * -1):
                                     print("AI Won!")
                                     gameActive = False
-                                elif (wonPlayer == _P2PIECE):
+                                elif (wonPlayer == player):
                                     print("You Won!")
                                     gameActive = False
                             selectedPiece = None
@@ -80,11 +80,11 @@ if __name__ == "__main__":
                 
                 nextBoardStates = bt.getAllBoards(CB)
                 wonPlayer = CB.gameEnd(len(nextBoardStates))
-                if (wonPlayer == _P1PIECE):
+                if (wonPlayer == player * -1):
                     print("AI Won!")
                     ai.applyQReward(wonPlayer)
                     gameActive = False
-                elif (wonPlayer == _P2PIECE):
+                elif (wonPlayer == player):
                     print("You Won!")
                     ai.applyQReward(wonPlayer)
                     gameActive = False
