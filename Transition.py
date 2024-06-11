@@ -81,7 +81,7 @@ class BoardTransition:
         for newRow, newColumn in diagonals:
             
             if 0 <= newRow < _ROWS and 0 <= newColumn < _COLS: # Check if the new position is within the bounds of the board
-                if (type(board.board[newRow][newColumn]) is not Piece): # if the new position is empty it is a valid move
+                if not isinstance(board.board[newRow][newColumn], Piece): # if the new position is empty it is a valid move
                     validMoves.append((newRow, newColumn)) # Add the move to validMoves
 
         return validMoves
@@ -129,7 +129,7 @@ class BoardTransition:
             if 0 <= newRow < len(board.board) and 0 <= newColumn < len(board.board[0]) \
                     and 0 <= capture_row < len(board.board) and 0 <= capture_col < len(board.board[0]):
                 # Check if the new position contains an opponent's piece and the capture position is empty
-                if board.board[newRow][newColumn] == opponent and board.board[capture_row][capture_col] == 0:
+                if isinstance(board.board[newRow][newColumn], Piece) and board.board[newRow][newColumn].pieceNum == opponent and not isinstance(board.board[capture_row][capture_col], Piece):
                     capturing_moves.append((capture_row, capture_col))
         
         return capturing_moves
