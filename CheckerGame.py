@@ -72,7 +72,13 @@ class CheckerBoard:
 
 
     # Sets up pieces for a new game
-    def initializeBoard(self):
+    def initializeBoard(self, player = _P2PIECE):
+        self.player1NumPieces = self.player2NumPieces = 12
+        self.player1NumKings = self.player2NumKings = 0
+
+        self.board.clear()
+        self.turn = player
+
         for i in range(_ROWS):
             self.board.append([])
             for j in range(_COLS):
@@ -344,4 +350,5 @@ class CheckerBoard:
             self.player2NumPieces = other.player2NumPieces
             self.player1NumKings = other.player1NumKings
             self.player2NumKings = other.player2NumKings
+            self.turn = other.turn
         
