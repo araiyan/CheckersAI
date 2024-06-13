@@ -13,10 +13,11 @@ if __name__ == "__main__":
     bt = BoardTransition()
     CB = CheckerBoard()
 
-    player = _P1PIECE
+    player = _P2PIECE
 
     replayable = True
     gameActive = True
+    winnerMessage = ""
 
     while(replayable):
         CB.initializeBoard()
@@ -49,9 +50,11 @@ if __name__ == "__main__":
                                 wonPlayer = CB.gameEnd(len(nextBoardStates))
                                 if (wonPlayer == player * -1):
                                     print("AI Won!")
+                                    winnerMessage = "AI Won!"
                                     gameActive = False
                                 elif (wonPlayer == player):
                                     print("You Won!")
+                                    winnerMessage = "You Won!"
                                     gameActive = False
                             selectedPiece = None
 
@@ -72,6 +75,7 @@ if __name__ == "__main__":
                 if (repeatedMoves.get(nextBestMove) is not None):
                     if (repeatedMoves[nextBestMove] >= 3):
                         print("Boards repeated resulted in a draw!")
+                        winnerMessage = "Its a draw!"
                         gameActive = False
                     else:
                         repeatedMoves[nextBestMove] += 1
@@ -82,10 +86,12 @@ if __name__ == "__main__":
                 wonPlayer = CB.gameEnd(len(nextBoardStates))
                 if (wonPlayer == player * -1):
                     print("AI Won!")
+                    winnerMessage = "AI Won!"
                     ai.applyQReward(wonPlayer)
                     gameActive = False
                 elif (wonPlayer == player):
                     print("You Won!")
+                    winnerMessage = "You Won!"
                     ai.applyQReward(wonPlayer)
                     gameActive = False
             # Monitoring Performance
@@ -98,7 +104,7 @@ if __name__ == "__main__":
 
         # Continuation Logic
         CB.drawBoard(window)
-        CB.debug(window, currentBoardEval, "Click Here to Play again!")
+        CB.debug(window, currentBoardEval, winnerMessage + " " + "Click Here to Play again!")
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
